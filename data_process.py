@@ -131,38 +131,25 @@ def write_dict_to_file(filename, dict_to_write):
       file_to_write.write(str(key) + "=" + str(value) + "\n")
 
 
-#根据长度对词排序
+#根据短句内词的个数，从小到大排序
+#enumerate() 函数用于将一个可遍历的数据对象(如列表、元组或字符串)组合为一个索引序列，同时列出数据和数据下标，一般用在 for 循环当中。
+def sort_text_based_on_number_of_words(sources, targets)
+  sorted_sources = []
+  sorted_targets = []
+  
+  for length in range(min_line_length, max_line_length):
+    #比较source词的长度（单词数量）
+    #enumerate() 函数用于将一个可遍历的数据对象(如列表、元组或字符串)组合为一个索引序列，同时列出数据和数据下标，一般用在 for 循环当中。
+    #split 返回分割后的字符串列表,用空格做分隔符可以得到单词个数
+    for i, ques in enumerate(source):
+      que_arry = ques.split(" ")
+      if len(que_arry) == length:
+        sorted_sources.append(sources[i])
+        sorted_targets.append(targets[i])
+        
+  return sorted_sources, sorted_targets
+    
 
-
-
-#数据处理主函数
-def main_prepare_data():
-  #读文件
-  
-  
-  #得到英文-中文短语对
-  
-  
-  #根据英中文对，得到 翻译原(英文)文件 和 翻译目标(中文)文件
-  
-  
-  #分别读取翻译原文件 和 翻译目标文件 为多行句子
-  
-  
-  #清理句子，删除特殊字符 （清理翻译原文件和翻译目标文件中的多行句子）
-  
-  
-  #得到词-id映射关系
-  
-  
-  #保存词-id映射到文件
-  
-  
-  #排序？
-  
-  #保存排序后的中英文训练文件
-  
-  
 #清理多行句子
 def clean_sentence(sentences):
   cleaned_sentences = []
@@ -225,4 +212,35 @@ def create_source_target_file_from_paris(paris, source_file, target_file, min_wo
     source_file.close()
     target_file.close()
     return number_of_samples
+  
+  
+#数据处理主函数
+def main_prepare_data():
+  #读文件
+  
+  
+  #得到英文-中文短语对
+  
+  
+  #根据英中文对，得到 翻译原(英文)文件 和 翻译目标(中文)文件
+  
+  
+  #分别读取翻译原文件 和 翻译目标文件 为多行句子
+  
+  
+  #清理句子，删除特殊字符 （清理翻译原文件和翻译目标文件中的多行句子）
+  
+  
+  #得到词-id映射关系
+  
+  
+  #保存词-id映射到文件
+  
+  
+  #根据词长度排序
+  
+  #保存排序后的中英文训练文件
+  
+  
+
     
