@@ -4,6 +4,9 @@ from unicodedata import normalize
 from numpy.ma import array
 
 FILE_PATH = 'raw_data/cmn.txt'
+min_line_length = 2   #一句话最少需要的单词数
+max_line_length = 30  #一句话最多允许的单词数
+frequence_of_word = 1 #词最少出现的次数
 
 #1、以utf-8格式加载文件.
 #open() 方法用于打开一个文件，并返回文件对象
@@ -65,9 +68,7 @@ def clean_pairs(pairs):
   
   return array(cleaned_pairs)
 
-min_line_length = 2   #一句话最少需要的单词数
-max_line_length = 30  #一句话最多允许的单词数
-frequence_of_word = 1 #词最少出现的次数
+
 
 
 #4、创建单词索引和反向单词索引（从单词→id和id→单词映射的字典）
@@ -99,7 +100,7 @@ def create_dictionary_word_usage(selected_source, selected_target)
      
   return vocab
 
-# word 到 id 的映射
+# 返回word 到 id 的映射词典
 def vocab_from_word_to_emb(dict_word_usage, min_number_of_usage):
   vocab_word_to_int = {}
   
@@ -131,7 +132,7 @@ def write_dict_to_file(filename, dict_to_write):
       file_to_write.write(str(key) + "=" + str(value) + "\n")
 
 
-#根据短句内词的个数，从小到大排序
+#根据短句内词的个数，从小到大排序（短句短的在前短句长的在后）. 返回排序后的翻译原文件和翻译目标文件
 #enumerate() 函数用于将一个可遍历的数据对象(如列表、元组或字符串)组合为一个索引序列，同时列出数据和数据下标，一般用在 for 循环当中。
 def sort_text_based_on_number_of_words(sources, targets)
   sorted_sources = []
@@ -213,34 +214,50 @@ def create_source_target_file_from_paris(paris, source_file, target_file, min_wo
     target_file.close()
     return number_of_samples
   
-  
+
+SOURCE_FILE = 'process_data/english'
+TARGET_FILE = 'process_data/chiness'
+VOCAB_MAP_FILE = 'process_data/vocab_map'
+ENGLISH_FILE = 'process_data/english_train'
+CHINESS_FILE = 'process_data/chiness_train'
+
 #数据处理主函数
 def main_prepare_data():
   #读文件
-  
-  
+  text = load_doc(FILE_PATH)
   #得到英文-中文短语对
+  pairs = to_pairs(text)
+  print(len(pairs))
   
-  
-  #根据英中文对，得到 翻译原(英文)文件 和 翻译目标(中文)文件
-  
-  
+   #根据英中文对，得到 翻译原(英文)文件 和 翻译目标(中文)文件
+  total_samples = create_source_target_file_from_paris(pairs, SOURCE_FILE, TARGET_FILE, min_line_length, max_line_length)
+  print('Total num of samples: ', total_samples)
+
   #分别读取翻译原文件 和 翻译目标文件 为多行句子
-  
+  source_lines = read_file_to_lines(SOURCE_FILE)
+  target_lines = read_file_to_lines(TARGET_FILE)
   
   #清理句子，删除特殊字符 （清理翻译原文件和翻译目标文件中的多行句子）
-  
-  
+  source_lines = clean_sentence(source_lines)
+  target_lines = clean_sentence(target_lines)
+   
   #得到词-id映射关系
-  
-  
+  dict_word_usage = create_dictionary_word_usage(source_lines, target_lines)
+  print("Total number of words in dictionary ", len(dict_word_usage))
+  vocab_word_to_int = vocab_from_word_to_emb(dict_word_usage, frequence_of_word)
+  print("Total number of words_id finally in dictionary ", len(vocab_words_to_int))
+    
   #保存词-id映射到文件
-  
+  write_dict_to_file(VOCAB_MAP_FILE, vocab_word_to_int)
   
   #根据词长度排序
+  sorted_sources, sorted_target = sort_text_based_on_number_of_words(source_lines, target_lines)
   
   #保存排序后的中英文训练文件
-  
+  write_lines_to_file(ENGLISH_FILE, source_lines)
+  write_lines_to_file(CHINESS_FILE, target_lines)
   
 
     
+main_prepare_data()
+
